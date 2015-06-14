@@ -5,12 +5,26 @@ def load_json():
     """load data. question responses stored here.
     0 means no, 1 means yes, -1 means unknown (question is new)
     """
-    f = open('data.json', 'r')
+    f = open("data.json", "r")
     return json.loads(f.read())
 
-# display welcome message
 
-# prompt the user to think of an animal
+def safe_input(prompt):
+    """Allow canceling input without errors"""
+    try:
+        user_input = raw_input(prompt)
+    except EOFError:
+        user_input = None
+    except KeyboardInterrupt:
+        user_input = None
+
+    return user_input
+
+
+def welcome():
+    """display welcome message"""
+    print(u"Welcome to the Animal Guesser!")
+    safe_input(u"Please think of an animal, then press a key to begin!")
 
 # main game loop here
     # print a question
@@ -41,6 +55,14 @@ def load_json():
     #if no:
         # terminate program
 
+
+def play_again():
+    response = safe_input(u"Do you want to play again?")
+    return True if response in (u"Yes", u"yes", u"Y", u"y") else False
+
 if __name__ == "__main__":
-    jsondata = load_json()
-    print jsondata
+    while True:
+        jsondata = load_json()
+        welcome()
+        if not play_again():
+            break

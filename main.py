@@ -1,4 +1,6 @@
 import json
+import random
+import copy
 
 
 def load_json():
@@ -51,18 +53,36 @@ def welcome():
             # store new animal along with user responses
             # store new question, put in yes for new animal, no for guessed animal, -1 for all others
 
-# ask user if they want to play again
-    #if no:
-        # terminate program
+
+def prompt_yes_or_no(prompt):
+    response = safe_input(prompt)
+    return True if response in (u"Yes", u"yes", u"Y", u"y") else False
 
 
 def play_again():
-    response = safe_input(u"Do you want to play again?")
-    return True if response in (u"Yes", u"yes", u"Y", u"y") else False
+    return prompt_yes_or_no(u"Do you want to play again?")
+
+
+def get_question(questions, animals):
+    # if there are no more questions
+    if not len(questions):
+        # make guess at animal
+        return u"Is your animal a " + random.choice(animals.keys())
+    else:
+        # select a question (preferably one that will eliminate a lot of animals
+        return random.choice(questions)
+
 
 if __name__ == "__main__":
+    jsondata = load_json()
     while True:
-        jsondata = load_json()
+        # create safe-to-modify lists
+        questions = copy.deepcopy(jsondata["questions"])
+        animals = copy.deepcopy(jsondata["animals"])
         welcome()
+        while True:
+            question = get_question(questions, animals)
+            # prompt user for response
+            response = prompt_yes_or_no(question)
         if not play_again():
             break

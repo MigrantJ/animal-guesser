@@ -1,7 +1,12 @@
-# whole game should loop
+import json
 
-# load data
-    # question responses stored here. 0 means no, 1 means yes, -1 means unknown (question is new)
+
+def load_json():
+    """load data. question responses stored here.
+    0 means no, 1 means yes, -1 means unknown (question is new)
+    """
+    f = open('data.json', 'r')
+    return json.loads(f.read())
 
 # display welcome message
 
@@ -35,3 +40,7 @@
 # ask user if they want to play again
     #if no:
         # terminate program
+
+if __name__ == "__main__":
+    jsondata = load_json()
+    print jsondata

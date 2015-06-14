@@ -1,0 +1,15 @@
+{
+  "questions": [
+    "Is it a mammal?",
+    "Is it a fish?",
+    "Does it eat meat?",
+    "Does it know how to party?"
+  ],
+
+  "animals": {
+    "Zebra": [1, 0, 0, -1],
+    "Human": [1, 0, 1, 1],
+    "Trout": [0, 1, 0, 0],
+    "Shark": [0, 1, 1, -1]
+  }
+}

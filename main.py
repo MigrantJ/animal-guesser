@@ -62,6 +62,13 @@ def narrow_animals(animals, qindex, response):
             or animals[a][qindex] is None}
 
 
+def fill_in_unknowns(data, responses):
+    """Replaces unknowns about an animal in the data with answers from the
+    user responses, if they exist. Returns new data.
+    """
+    return [x if x is not None else y for x, y in zip(data, responses)]
+
+
 if __name__ == "__main__":
     jsondata = load_json()
     while True:
@@ -69,12 +76,14 @@ if __name__ == "__main__":
         qs = jsondata["questions"]
         questions = {i: q for i, q in zip(range(len(qs)), qs)}
         animals = copy.deepcopy(jsondata["animals"])
-        responses = [-1 for i in range(len(questions))]
+        responses = [None for i in range(len(questions))]
         response_yes = None
         guess = None
         welcome()
 
         while True:
+            print(questions)
+            print(animals)
             # if there are no more questions or animals
             if len(animals) == 1 or not len(questions):
                 guess = guess_animal(animals)
@@ -92,7 +101,9 @@ if __name__ == "__main__":
         if not response_yes:
             newanimal = safe_input(u"Dang! What was your animal?")
             if newanimal in jsondata["animals"]:
-                print(u"That's weird, I know that animal.")
+                print(u"Oh, I know that animal!")
+                data = jsondata["animals"][newanimal]
+                jsondata["animals"][newanimal] = fill_in_unknowns(data, responses)
             else:
                 newi = len(questions)
                 newquestion = safe_input(u"Okay, what's a question that is true for " + newanimal + u" but false for " + guess)
@@ -102,11 +113,12 @@ if __name__ == "__main__":
                 jsondata["questions"].append(newquestion)
                 for animal, answers in jsondata["animals"].iteritems():
                     answers.append(-1)
-                jsondata["animals"][newanimal][-1] = 1
-                jsondata["animals"][guess][-1] = 0
+                jsondata["animals"][newanimal][-1] = True
+                jsondata["animals"][guess][-1] = False
         else:
-            # TODO: add responses to data of animal if answer is unknown (-1)
             print(u"YES! I RULE!")
+            data = jsondata["animals"][guess]
+            jsondata["animals"][guess] = fill_in_unknowns(data, responses)
 
         if not play_again():
             break

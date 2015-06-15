@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json
 import random
 import copy
@@ -65,24 +67,39 @@ def play_again():
 
 def get_question(questions, animals):
     # if there are no more questions
-    if not len(questions):
+    if len(animals) == 1 or not len(questions):
         # make guess at animal
-        return u"Is your animal a " + random.choice(animals.keys())
+        return -1, u"Is your animal a " + random.choice(animals.keys()) + u"?"
     else:
-        # select a question (preferably one that will eliminate a lot of animals
-        return random.choice(questions)
+        # select a question (preferably one that will narrow animal list)
+        i = random.choice(questions.keys())
+        # don't ask question again
+        q = questions.pop(i)
+        return i, q
+
+
+def narrow_animals(animals, qindex, response):
+    return {a: rs for a, rs in animals.iteritems()
+            if animals[a][qindex] == response}
 
 
 if __name__ == "__main__":
     jsondata = load_json()
     while True:
         # create safe-to-modify lists
-        questions = copy.deepcopy(jsondata["questions"])
+        qs = jsondata["questions"]
+        questions = {i: q for i, q in zip(range(len(qs)), qs)}
         animals = copy.deepcopy(jsondata["animals"])
         welcome()
+
         while True:
-            question = get_question(questions, animals)
+            qindex, question = get_question(questions, animals)
             # prompt user for response
             response = prompt_yes_or_no(question)
+            animals = narrow_animals(animals, qindex, response)
+            if qindex == -1:
+                # this was an animal guess
+                break
+
         if not play_again():
             break

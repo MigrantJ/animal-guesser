@@ -7,7 +7,7 @@ import copy
 
 def load_json():
     """load data. question responses stored here.
-    0 means no, 1 means yes, -1 means unknown (question is new)
+    false means no, true means yes, null/None means unknown (question is new)
     """
     f = open("data.json", "r")
     return json.loads(f.read())
@@ -33,7 +33,7 @@ def welcome():
 
 def prompt_yes_or_no(prompt):
     response = safe_input(prompt)
-    return 1 if response in (u"Yes", u"yes", u"Y", u"y") else 0
+    return response in (u"Yes", u"yes", u"Y", u"y")
 
 
 def play_again():
@@ -59,7 +59,7 @@ def narrow_animals(animals, qindex, response):
     """
     return {a: rs for a, rs in animals.iteritems()
             if animals[a][qindex] == response
-            or animals[a][qindex] == -1}
+            or animals[a][qindex] is None}
 
 
 if __name__ == "__main__":

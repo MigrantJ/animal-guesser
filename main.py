@@ -66,16 +66,15 @@ def play_again():
 
 
 def get_question(questions, animals):
-    # if there are no more questions
-    if len(animals) == 1 or not len(questions):
-        # make guess at animal
-        return -1, u"Is your animal a " + random.choice(animals.keys()) + u"?"
-    else:
-        # select a question (preferably one that will narrow animal list)
-        i = random.choice(questions.keys())
-        # don't ask question again
-        q = questions.pop(i)
-        return i, q
+    # select a question (preferably one that will narrow animal list)
+    i = random.choice(questions.keys())
+    # don't ask question again
+    q = questions.pop(i)
+    return i, q
+
+
+def guess_animal(animals):
+    return random.choice(animals.keys())
 
 
 def narrow_animals(animals, qindex, response):
@@ -90,16 +89,32 @@ if __name__ == "__main__":
         qs = jsondata["questions"]
         questions = {i: q for i, q in zip(range(len(qs)), qs)}
         animals = copy.deepcopy(jsondata["animals"])
+        response_yes = None
+        guess = None
         welcome()
 
         while True:
-            qindex, question = get_question(questions, animals)
+            # if there are no more questions or animals
+            if len(animals) == 1 or not len(questions):
+                guess = guess_animal(animals)
+                question = u"Is your animal a " + guess + u"?"
+            else:
+                qindex, question = get_question(questions, animals)
             # prompt user for response
-            response = prompt_yes_or_no(question)
-            animals = narrow_animals(animals, qindex, response)
-            if qindex == -1:
-                # this was an animal guess
+            response_yes = prompt_yes_or_no(question)
+            if guess:
                 break
+            else:
+                animals = narrow_animals(animals, qindex, response_yes)
+
+        if not response_yes:
+            newanimal = safe_input(u"Dang! What was your animal?")
+            if jsondata["animals"][newanimal]:
+                print(u"That's weird, I know that animal.")
+            else:
+                newquestion = safe_input(u"Okay, what's a question that would distinguish that animal from " + guess)
+        else:
+            print(u"YES! I RULE!")
 
         if not play_again():
             break

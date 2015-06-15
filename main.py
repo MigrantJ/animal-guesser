@@ -58,7 +58,7 @@ def welcome():
 
 def prompt_yes_or_no(prompt):
     response = safe_input(prompt)
-    return True if response in (u"Yes", u"yes", u"Y", u"y") else False
+    return 1 if response in (u"Yes", u"yes", u"Y", u"y") else 0
 
 
 def play_again():
@@ -79,7 +79,8 @@ def guess_animal(animals):
 
 def narrow_animals(animals, qindex, response):
     return {a: rs for a, rs in animals.iteritems()
-            if animals[a][qindex] == response}
+            if animals[a][qindex] == response
+            or animals[a][qindex] == -1}
 
 
 if __name__ == "__main__":
@@ -89,11 +90,14 @@ if __name__ == "__main__":
         qs = jsondata["questions"]
         questions = {i: q for i, q in zip(range(len(qs)), qs)}
         animals = copy.deepcopy(jsondata["animals"])
+        responses = [-1 for i in range(len(questions))]
         response_yes = None
         guess = None
         welcome()
 
         while True:
+            print(questions)
+            print(animals)
             # if there are no more questions or animals
             if len(animals) == 1 or not len(questions):
                 guess = guess_animal(animals)
@@ -105,14 +109,24 @@ if __name__ == "__main__":
             if guess:
                 break
             else:
+                responses[qindex] = response_yes
                 animals = narrow_animals(animals, qindex, response_yes)
 
         if not response_yes:
             newanimal = safe_input(u"Dang! What was your animal?")
-            if jsondata["animals"][newanimal]:
+            if newanimal in jsondata["animals"]:
                 print(u"That's weird, I know that animal.")
             else:
-                newquestion = safe_input(u"Okay, what's a question that would distinguish that animal from " + guess)
+                newi = len(questions)
+                newquestion = safe_input(u"Okay, what's a question that is true for " + newanimal + u" but false for " + guess)
+                # store new animal along with user responses
+                jsondata["animals"][newanimal] = responses
+                # store new question, put in yes for new animal, no for guessed animal, -1 for all others
+                jsondata["questions"].append(newquestion)
+                for animal, answers in jsondata["animals"].iteritems():
+                    answers.append(-1)
+                jsondata["animals"][newanimal][-1] = 1
+                jsondata["animals"][guess][-1] = 0
         else:
             print(u"YES! I RULE!")
 

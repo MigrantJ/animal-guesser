@@ -138,16 +138,20 @@ if __name__ == "__main__":
             else:
                 newi = len(questions)
                 newquestion = safe_input(u"Okay, what's a question that is true for " + newanimal + u" but false for " + guess)
+
                 # store new animal along with user responses
                 jsondata["animals"][newanimal] = responses
+
                 # store new question
                 jsondata["questions"].append(newquestion)
-                # put in yes for new animal, no for guessed animal...
-                jsondata["animals"][newanimal][-1] = True
-                jsondata["animals"][guess][-1] = False
-                # ... unknown for all others
+
+                # put unknown answer to new question for all animals
                 for animal, answers in jsondata["animals"].iteritems():
                     answers.append(None)
+
+                # ...except yes for new animal, no for guessed animal
+                jsondata["animals"][newanimal][-1] = True
+                jsondata["animals"][guess][-1] = False
         else:
             print(u"YES! I RULE!")
             data = jsondata["animals"][guess]

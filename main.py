@@ -49,14 +49,24 @@ def play_again():
 
 def get_question(questions, animals):
     """Select a question based on what will narrow the animal list the most."""
-    # select the question with the most trues and falses
-    q_indexes = [i for i in questions.keys()]
-    q_counts = [0 for i in animals[random.choice(animals.keys())]]
+    true_counts = [len(animals) * -1 for i in animals[random.choice(animals.keys())]]
+    false_counts = [len(animals) for i in animals[random.choice(animals.keys())]]
     for name, answers in animals.iteritems():
         for index, answer in enumerate(answers):
-            q_counts[index] += 1
+            if index not in questions.keys():
+                true_counts[index] += 100
+                continue
 
-    i = q_indexes[q_counts.index(max(q_counts))]
+            if answer is True:
+                true_counts[index] += 1
+            elif answer is False:
+                false_counts[index] -= 1
+
+    counts = [abs(t - f) for t, f in zip(true_counts, false_counts)]
+
+    print(counts)
+
+    i = counts.index(min(counts))
     # don't ask question again
     q = questions.pop(i)
     return i, q
@@ -96,7 +106,7 @@ if __name__ == "__main__":
 
         while True:
             # print(questions)
-            # print(animals)
+            print(animals.keys())
             # if there are no more questions or animals
             if len(animals) == 0:
                 break

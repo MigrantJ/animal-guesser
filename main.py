@@ -14,6 +14,7 @@ def load_json():
 
 
 def save_json(data):
+    """save data to json file."""
     o = json.dumps(data)
     f = open("data.json", "w")
     f.write(o)
@@ -22,7 +23,7 @@ def save_json(data):
 def safe_input(prompt):
     """Allow canceling input without errors"""
     try:
-        user_input = raw_input(prompt)
+        user_input = raw_input(prompt + u"\n> ")
     except EOFError:
         user_input = None
     except KeyboardInterrupt:
@@ -48,8 +49,14 @@ def play_again():
 
 def get_question(questions, animals):
     """Select a question based on what will narrow the animal list the most."""
-    # TODO: don't make selection random
-    i = random.choice(questions.keys())
+    # select the question with the most trues and falses
+    q_indexes = [i for i in questions.keys()]
+    q_counts = [0 for i in animals[random.choice(animals.keys())]]
+    for name, answers in animals.iteritems():
+        for index, answer in enumerate(answers):
+            q_counts[index] += 1
+
+    i = q_indexes[q_counts.index(max(q_counts))]
     # don't ask question again
     q = questions.pop(i)
     return i, q
@@ -117,6 +124,7 @@ if __name__ == "__main__":
                 print(u"Oh, I know that animal!")
                 data = jsondata["animals"][newanimal]
                 jsondata["animals"][newanimal] = fill_in_unknowns(data, responses)
+                print(u"Now I've learned more about it.")
             else:
                 newi = len(questions)
                 newquestion = safe_input(u"Okay, what's a question that is true for " + newanimal + u" but false for " + guess)

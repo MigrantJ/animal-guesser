@@ -91,7 +91,9 @@ if __name__ == "__main__":
             # print(questions)
             # print(animals)
             # if there are no more questions or animals
-            if len(animals) == 1 or not len(questions):
+            if len(animals) == 0:
+                break
+            elif len(animals) == 1 or not len(questions):
                 guess = guess_animal(animals)
                 question = u"Is your animal a " + guess + u"?"
             else:
@@ -104,7 +106,12 @@ if __name__ == "__main__":
                 responses[qindex] = response_yes
                 animals = narrow_animals(animals, qindex, response_yes)
 
-        if not response_yes:
+        if not guess:
+            newanimal = safe_input(u"You stumped me! What's your animal?")
+            # store new animal along with user responses
+            jsondata["animals"][newanimal] = responses
+            print(u"Okay, I'll remember that one for next time.")
+        elif not response_yes:
             newanimal = safe_input(u"Dang! What was your animal?")
             if newanimal in jsondata["animals"]:
                 print(u"Oh, I know that animal!")
@@ -123,7 +130,6 @@ if __name__ == "__main__":
                 # ... unknown for all others
                 for animal, answers in jsondata["animals"].iteritems():
                     answers.append(None)
-
         else:
             print(u"YES! I RULE!")
             data = jsondata["animals"][guess]
@@ -132,3 +138,4 @@ if __name__ == "__main__":
         if not play_again():
             break
     save_json(jsondata)
+    print(u"Thanks for playing! And remember... I'M GETTING SMARTER")

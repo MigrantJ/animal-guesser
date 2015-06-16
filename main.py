@@ -13,6 +13,12 @@ def load_json():
     return json.loads(f.read())
 
 
+def save_json(data):
+    o = json.dumps(data)
+    f = open("data.json", "w")
+    f.write(o)
+
+
 def safe_input(prompt):
     """Allow canceling input without errors"""
     try:
@@ -82,8 +88,8 @@ if __name__ == "__main__":
         welcome()
 
         while True:
-            print(questions)
-            print(animals)
+            # print(questions)
+            # print(animals)
             # if there are no more questions or animals
             if len(animals) == 1 or not len(questions):
                 guess = guess_animal(animals)
@@ -109,12 +115,15 @@ if __name__ == "__main__":
                 newquestion = safe_input(u"Okay, what's a question that is true for " + newanimal + u" but false for " + guess)
                 # store new animal along with user responses
                 jsondata["animals"][newanimal] = responses
-                # store new question, put in yes for new animal, no for guessed animal, -1 for all others
+                # store new question
                 jsondata["questions"].append(newquestion)
-                for animal, answers in jsondata["animals"].iteritems():
-                    answers.append(-1)
+                # put in yes for new animal, no for guessed animal...
                 jsondata["animals"][newanimal][-1] = True
                 jsondata["animals"][guess][-1] = False
+                # ... unknown for all others
+                for animal, answers in jsondata["animals"].iteritems():
+                    answers.append(None)
+
         else:
             print(u"YES! I RULE!")
             data = jsondata["animals"][guess]
@@ -122,3 +131,4 @@ if __name__ == "__main__":
 
         if not play_again():
             break
+    save_json(jsondata)

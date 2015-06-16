@@ -1,15 +1,1 @@
-{
-  "questions": [
-    "Is it a mammal?",
-    "Is it a fish?",
-    "Can it eat meat?",
-    "Does it know how to party?"
-  ],
-
-  "animals": {
-    "Zebra": [true, false, false, null],
-    "Human": [true, false, true, true],
-    "Trout": [false, true, false, false],
-    "Shark": [false, true, true, null]
-  }
-}
+{"animals": {"Shark": [false, true, true, null, null], "Trout": [false, true, false, false, null], "Whale": [true, false, false, false, true], "Human": [true, false, true, true, null], "Zebra": [true, false, false, null, false]}, "questions": ["Is it a mammal?", "Is it a fish?", "Can it eat meat?", "Does it know how to party?", "Does it live in water?"]}
